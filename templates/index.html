@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-store" />
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
+    <title>Генератор КП</title>
+    <link rel="stylesheet" href="/static/styles.css?v=60" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header__brand">
+        <img src="/static/favicon.svg" alt="" class="site-header__logo" width="36" height="36" />
+        <div>
+          <h1>Генератор КП</h1>
+          <p class="site-header__tagline">Goldcontainer</p>
+        </div>
+      </div>
+      <nav class="site-header__nav">
+        <button type="button" class="btn btn-surface" id="reload-page-btn">Перезагрузить</button>
+      </nav>
+    </header>
+    <main class="container">
+      <section class="top-split">
+        <article class="kpi-card kpi-card--inbox">
+          <p class="kpi-label">ВХОДЯЩИЕ</p>
+          <p class="kpi-value">{{ kpi_incoming_total }}</p>
+          <div class="kpi-actions">
+            <button class="btn btn-surface kpi-btn" type="button" id="ingest-mail-btn">Проверить</button>
+            <a class="btn btn-inbox-link kpi-btn" href="/review/ui" target="_blank" rel="noreferrer">Входящие</a>
+          </div>
+          <p class="hint kpi-card__hint" id="ingest-result-text" aria-live="polite"></p>
+        </article>
+        <section class="card card--settings">
+          <div class="grid grid--settings">
+            <label>
+              Дата
+              <input type="date" name="offer_date" value="{{ today }}" required form="offer-form" />
+            </label>
+            <label>
+              Режим НДС
+              <select name="vat_mode" required form="offer-form">
+                <option value="cash">Наличные</option>
+                <option value="without_vat">Без НДС (+17%)</option>
+                <option value="with_vat">С НДС (+35%)</option>
+              </select>
+            </label>
+            <label>
+              Шаблон
+              <select name="template_type" required form="offer-form">
+                <option value="with_header">С реквизитами ГК (Реки.pdf)</option>
+                <option value="free">Без реквизитов ГК (Без.pdf)</option>
+              </select>
+            </label>
+            <label class="grid-span-2">
+              Адрес доставки
+              <input type="text" name="delivery_address" placeholder="г. Москва, ул. Пример, д. 1" form="offer-form" />
+            </label>
+            <label>
+              Клиент (опционально)
+              <input type="text" name="customer_name" placeholder="ООО Ромашка" form="offer-form" />
+            </label>
+          </div>
+          <label class="checkbox-label">
+            <input type="checkbox" name="include_signature" id="include-signature" form="offer-form" />
+            Добавить подпись внизу
+          </label>
+        </section>
+      </section>
+      {% if mail_status == "ok" %}
+      <p class="hint">Письмо успешно отправлено.</p>
+      {% elif mail_status == "queued" %}
+      <p class="hint">Письмо поставлено в отправку. Если не пришло за 1-2 минуты, попробуй отправить еще раз.</p>
+      {% elif mail_status == "error" and mail_error %}
+      <p class="hint" style="color:#b00020;">Ошибка отправки: {{ mail_error }}</p>
+      {% endif %}
+
+      <form method="post" action="/preview" id="offer-form">
+        <input type="hidden" name="apply_rounding" id="apply-rounding-input" value="" />
+
+        <section class="card">
+          <div class="rows-header">
+            <h2>Строки номенклатуры</h2>
+            <button class="btn btn-surface btn-small" type="button" id="add-row">+ Добавить строку</button>
+          </div>
+          <div class="row-labels">
+            <div>Номенклатура</div>
+            <div>Кол-во</div>
+            <div>Цена</div>
+            <div>Сумма</div>
+          </div>
+
+          <div id="rows">
+            <div class="row-item">
+              <select name="item_name" required>
+                {% for item in nomenclature %}
+                <option value="{{ item }}">{{ item }}</option>
+                {% endfor %}
+              </select>
+              <div class="field-wrap qty-wrap">
+                <span class="mobile-field-label">Кол-во</span>
+                <div class="stepper-input-wrap">
+                  <input type="number" step="1" min="1" name="qty" value="1" required />
+                  <div class="stepper-buttons" aria-hidden="true">
+                    <button type="button" class="step-btn step-plus" data-target="qty">+</button>
+                    <button type="button" class="step-btn step-minus" data-target="qty">-</button>
+                  </div>
+                </div>
+              </div>
+              <div class="field-wrap price-wrap">
+                <span class="mobile-field-label">Цена</span>
+                <div class="stepper-input-wrap">
+                  <input type="number" step="1000" min="0" data-stepper="5000" name="price" value="0" required />
+                  <div class="stepper-buttons" aria-hidden="true">
+                    <button type="button" class="step-btn step-plus" data-target="price">+</button>
+                    <button type="button" class="step-btn step-minus" data-target="price">-</button>
+                  </div>
+                </div>
+              </div>
+              <input type="text" class="amount" value="0.00" readonly />
+              <button type="button" class="btn-remove-row remove-row" aria-label="Удалить строку">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path fill="currentColor" d="M9 3h6a1 1 0 0 1 1 1v1h4a1 1 0 1 1 0 2h-1v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7H5a1 1 0 1 1 0-2h4V4a1 1 0 0 1 1-1zm1 3H8v12h8V6h-6zm2 2a1 1 0 0 1 1 1v7a1 1 0 1 1-2 0V8a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v7a1 1 0 1 1-2 0V8a1 1 0 0 1 1-1z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card calc-section">
+          <h2 class="section-title">Онлайн расчет</h2>
+          <p class="calc-description">Округление доступно только для режимов с наценкой.</p>
+          <div class="calc-rounding-row">
+            <button class="btn btn-small" type="button" id="apply-rounding-btn">Округлить</button>
+            <span class="hint" id="rounding-state-text"></span>
+          </div>
+          <div class="calc-grid">
+            <div class="calc-row">
+              <span>Форма оплаты:</span>
+              <span class="calc-value" id="payment-label">Наличные</span>
+            </div>
+            <div class="calc-row">
+              <span>Базовая сумма:</span>
+              <span class="calc-value"><span id="subtotal">0.00</span> руб.</span>
+            </div>
+            <div class="calc-row">
+              <span>Наценка:</span>
+              <span class="calc-value"><span id="vat-amount">0.00</span> руб.</span>
+            </div>
+            <div class="calc-total">
+              <span>Итого:</span>
+              <span><span id="total">0.00</span> руб.</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="actions">
+          <button class="btn btn-preview" type="submit">Показать превью</button>
+        </div>
+      </form>
+
+      {% if preview %}
+      <section class="card preview">
+        <h2>Превью</h2>
+        <p><strong>Дата:</strong> {{ preview.offer_date.strftime('%d.%m.%Y') }}</p>
+        {% if preview.delivery_address %}
+        <p><strong>Адрес доставки:</strong> {{ preview.delivery_address }}</p>
+        {% endif %}
+        <p><strong>Форма оплаты:</strong> {{ preview.payment_label }}</p>
+        <table class="preview-table">
+          <thead>
+            <tr>
+              <th>Номенклатура</th>
+              <th>Кол-во</th>
+              <th>Форма оплаты</th>
+              <th>{{ preview.price_caption }}</th>
+              <th>{{ preview.total_caption }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in preview.rows %}
+            <tr>
+              <td data-label="Номенклатура">{{ row.item_name }}</td>
+              <td data-label="Кол-во">{{ '%.2f'|format(row.qty) }}</td>
+              <td data-label="Форма оплаты">{{ preview.payment_label }}</td>
+              <td data-label="{{ preview.price_caption }}">{{ '%.2f'|format(preview.adjusted_price(row)) }}</td>
+              <td data-label="{{ preview.total_caption }}">{{ '%.2f'|format(preview.row_amount(row)) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if preview.apply_rounding and preview.vat_mode != "cash" %}
+        <p><strong>Сумма:</strong> {{ '%.2f'|format(preview.total) }} руб.</p>
+        {% else %}
+        <p><strong>Сумма:</strong> {{ '%.2f'|format(preview.subtotal) }} руб.</p>
+        {% endif %}
+        <p><strong>Итого:</strong> {{ '%.2f'|format(preview.total) }} руб.</p>
+
+        <form method="post" action="/generate-pdf">
+          <input type="hidden" name="offer_date" value="{{ preview.offer_date.isoformat() }}" />
+          <input type="hidden" name="vat_mode" value="{{ preview.vat_mode }}" />
+          <input type="hidden" name="template_type" value="{{ preview.template_type }}" />
+          {% if preview.apply_rounding %}
+          <input type="hidden" name="apply_rounding" value="on" />
+          {% endif %}
+          <input type="hidden" name="customer_name" value="{{ preview.customer_name }}" />
+          <input type="hidden" name="delivery_address" value="{{ preview.delivery_address }}" />
+          {% if preview.include_signature %}
+          <input type="hidden" name="include_signature" value="on" />
+          {% endif %}
+          {% for row in preview.rows %}
+          <input type="hidden" name="item_name" value="{{ row.item_name }}" />
+          <input type="hidden" name="qty" value="{{ row.qty }}" />
+          <input type="hidden" name="price" value="{{ row.price }}" />
+          {% endfor %}
+          <button class="btn" type="submit">Скачать PDF</button>
+        </form>
+        <form method="post" action="/send-email" style="margin-top: 10px;" id="send-email-form">
+          <input type="hidden" name="offer_date" value="{{ preview.offer_date.isoformat() }}" />
+          <input type="hidden" name="vat_mode" value="{{ preview.vat_mode }}" />
+          <input type="hidden" name="template_type" value="{{ preview.template_type }}" />
+          {% if preview.apply_rounding %}
+          <input type="hidden" name="apply_rounding" value="on" />
+          {% endif %}
+          <input type="hidden" name="customer_name" value="{{ preview.customer_name }}" />
+          <input type="hidden" name="delivery_address" value="{{ preview.delivery_address }}" />
+          {% if preview.include_signature %}
+          <input type="hidden" name="include_signature" value="on" />
+          {% endif %}
+          {% for row in preview.rows %}
+          <input type="hidden" name="item_name" value="{{ row.item_name }}" />
+          <input type="hidden" name="qty" value="{{ row.qty }}" />
+          <input type="hidden" name="price" value="{{ row.price }}" />
+          {% endfor %}
+          <label>
+            Email получателя
+            <input type="email" name="recipient_email" placeholder="client@example.com" required />
+          </label>
+          <div class="mail-send-row">
+            <button class="btn" type="submit">Отправить на email</button>
+            <div class="mail-progress" id="mail-progress" aria-hidden="true">
+              <svg viewBox="0 0 36 36">
+                <circle class="mail-progress-track" cx="18" cy="18" r="15.5"></circle>
+                <circle class="mail-progress-ring" cx="18" cy="18" r="15.5"></circle>
+              </svg>
+            </div>
+          </div>
+          <p class="hint" id="mail-progress-text"></p>
+        </form>
+      </section>
+      {% endif %}
+    </main>
+
+    <template id="row-template">
+      <div class="row-item">
+        <select name="item_name" required>
+          {% for item in nomenclature %}
+          <option value="{{ item }}">{{ item }}</option>
+          {% endfor %}
+        </select>
+        <div class="field-wrap qty-wrap">
+          <span class="mobile-field-label">Кол-во</span>
+          <div class="stepper-input-wrap">
+            <input type="number" step="1" min="1" name="qty" value="1" required />
+            <div class="stepper-buttons" aria-hidden="true">
+              <button type="button" class="step-btn step-plus" data-target="qty">+</button>
+              <button type="button" class="step-btn step-minus" data-target="qty">-</button>
+            </div>
+          </div>
+        </div>
+        <div class="field-wrap price-wrap">
+          <span class="mobile-field-label">Цена</span>
+          <div class="stepper-input-wrap">
+            <input type="number" step="1000" min="0" data-stepper="5000" name="price" value="0" required />
+            <div class="stepper-buttons" aria-hidden="true">
+              <button type="button" class="step-btn step-plus" data-target="price">+</button>
+              <button type="button" class="step-btn step-minus" data-target="price">-</button>
+            </div>
+          </div>
+        </div>
+        <input type="text" class="amount" value="0.00" readonly />
+        <button type="button" class="btn-remove-row remove-row" aria-label="Удалить строку">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path fill="currentColor" d="M9 3h6a1 1 0 0 1 1 1v1h4a1 1 0 1 1 0 2h-1v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7H5a1 1 0 1 1 0-2h4V4a1 1 0 0 1 1-1zm1 3H8v12h8V6h-6zm2 2a1 1 0 0 1 1 1v7a1 1 0 1 1-2 0V8a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v7a1 1 0 1 1-2 0V8a1 1 0 0 1 1-1z"/>
+          </svg>
+        </button>
+      </div>
+    </template>
+    <script src="/static/app.js?v=14"></script>
+  </body>
+  </html>
