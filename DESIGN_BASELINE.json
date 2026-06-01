@@ -1,0 +1,29 @@
+{
+  "version": 60,
+  "mark": "v60-top-split",
+  "layout_html_class": "top-split",
+  "forbidden_in_index_html": ["dashboard-grid", "class=\"dashboard-grid\""],
+  "required_markers": {
+    "styles.css": [
+      "design-mark: v60-top-split",
+      "--design-version: 60",
+      ".top-split",
+      ".btn-remove-row",
+      "body::before"
+    ],
+    "index.html": [
+      "top-split",
+      "styles.css?v=60",
+      "reload-page-btn"
+    ]
+  },
+  "cache_bust_files": [
+    "templates/index.html",
+    "main.py",
+    "review_routes.py"
+  ],
+  "cache_bust_value": "60",
+  "deploy_script": "./fix_prod_now.sh",
+  "locked": "2026-06-01",
+  "notes": "Baseline prod: inbox слева + форма справа, фон #f5f3f0, без lava/glass, оранжевая корзина в строках."
+}

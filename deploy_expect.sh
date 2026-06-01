@@ -128,7 +128,7 @@ session $pass
 wait_ok "remote-check"
 
 say "\n(7/7) docker recreate (без build)..."
-eval spawn $ssh_base root@$host "cd $remote && docker rm -f kp-app 2>/dev/null; fuser -k 8000/tcp 2>/dev/null; sleep 2; (docker compose up -d --force-recreate 2>/dev/null || docker-compose up -d --force-recreate); docker ps --filter name=kp-app"
+eval spawn $ssh_base root@$host "cd $remote && docker-compose down --remove-orphans 2>/dev/null || docker compose down --remove-orphans 2>/dev/null || true; docker ps -aq --filter name=kp-app | xargs -r docker rm -f 2>/dev/null || true; docker rm -f kp-app bbf3029154c0_kp-app 2>/dev/null || true; fuser -k 8000/tcp 2>/dev/null; sleep 2; (docker compose up -d 2>/dev/null || docker-compose up -d); docker ps --filter name=kp-app"
 session $pass 1
 wait_ok "docker"
 

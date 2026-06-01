@@ -28,11 +28,11 @@ cd web_kp && python telegram_bot.py
 
 ## Дизайн и прод
 
-Актуальный UI: **[DESIGN.md](DESIGN.md)** (v59). Прод зафиксирован: **[PRODUCTION.md](PRODUCTION.md)** (2026-06-01).
-
-Деплой на сервер (без `brew` / `sshpass`):
+**Зафиксированный baseline: v60** — см. [WORKFLOW.md](WORKFLOW.md), [DESIGN_BASELINE.json](DESIGN_BASELINE.json), [DESIGN.md](DESIGN.md).
 
 ```bash
-export DEPLOY_PASS='пароль root'
-cd ~/Projects/BOT/web_kp && ./deploy_expect.sh
+./scripts/verify_baseline.sh   # проверка локально
+./fix_prod_now.sh              # деплой на 72.56.237.74
 ```
+
+После правок UI: `./scripts/bump_design.sh 61 v61-top-split`

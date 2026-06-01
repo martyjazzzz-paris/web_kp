@@ -4,6 +4,7 @@
 set -eu
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT"
+"${ROOT}/scripts/verify_baseline.sh" || exit 1
 HOST="root@72.56.237.74"
 REMOTE="/root/BOT/web_kp"
 

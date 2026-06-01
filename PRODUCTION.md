@@ -18,11 +18,10 @@
 
 ```bash
 cd ~/Projects/BOT/web_kp
-export DEPLOY_PASS='пароль root'
-./deploy.sh
+./fix_prod_now.sh
 ```
 
-Скрипт: rsync `static/` + `templates/` + `docker-compose.yml` → `docker compose up -d --force-recreate` **без build** → проверка `/health/design`.
+Перед деплоем: `./scripts/verify_baseline.sh`
 
 ## Проверка после деплоя
 
