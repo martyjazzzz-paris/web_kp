@@ -673,15 +673,16 @@ select {
 
 .btn-surface,
 .btn-tonal {
-  color: #292524;
-  background: #f5f5f4;
+  color: #ffffff;
+  background: var(--brand);
   border: none;
   box-shadow: none;
 }
 
 .btn-surface:hover,
 .btn-tonal:hover {
-  background: #ebebea;
+  background: #1c1917;
+  color: #ffffff;
   filter: none;
   box-shadow: none;
 }
@@ -769,19 +770,20 @@ select {
 }
 
 .btn-small {
-  min-height: 40px;
-  padding: 10px 24px;
+  min-height: 42px;
+  padding: 10px 22px;
   font-size: 14px;
   font-weight: 500;
   border-radius: var(--md-shape-full);
-  color: #292524;
-  background: #f5f5f4;
+  color: #ffffff;
+  background: var(--brand);
   border: none;
   box-shadow: none;
 }
 
 .btn-small:hover {
-  background: #ebebea;
+  background: #1c1917;
+  color: #ffffff;
   filter: none;
   box-shadow: none;
 }
@@ -1877,10 +1879,10 @@ tr:last-child td {
 }
 
 .review-layout .actions .btn.btn-surface {
-  background: #ebebea !important;
-  color: #292524 !important;
+  background: var(--brand) !important;
+  color: #ffffff !important;
   border: none !important;
-  box-shadow: 0 0 0 1.5px rgba(28, 25, 23, 0.18) !important;
+  box-shadow: none !important;
 }
 
 .review-layout .actions form .btn:not(.btn-surface) {
@@ -1997,7 +1999,7 @@ tr:last-child td {
 }
 
 .inbox-actions .btn:hover {
-  background: #ebebea !important;
+  background: #1c1917 !important;
   filter: none !important;
 }
 
@@ -2092,16 +2094,16 @@ tr:last-child td {
 
 /* "Отклонить" — серая pill */
 .review-detail .actions form .btn.btn-surface {
-  background: #ebebea !important;
-  color: #292524 !important;
+  background: var(--brand) !important;
+  color: #ffffff !important;
   border: none !important;
   box-shadow: none !important;
   min-width: 0 !important;
 }
 
 .review-detail .actions form .btn.btn-surface:hover {
-  background: #d6d3d1 !important;
-  color: #292524 !important;
+  background: #1c1917 !important;
+  color: #ffffff !important;
   filter: none !important;
 }
 
