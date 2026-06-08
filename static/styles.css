@@ -810,6 +810,15 @@ select {
 }
 
 @media (max-width: 768px) {
+  /* Align header brand with container/table left edge on mobile */
+  .site-header__inner {
+    padding-left: 0;
+  }
+  .review-page .site-header__inner {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
   #offer-form > .actions--preview {
     order: 2;
     margin: 4px 0 12px;
