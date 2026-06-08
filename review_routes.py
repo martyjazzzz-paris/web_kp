@@ -199,8 +199,7 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
         subject_value = escape(e.subject or "")
         if has_draft:
             action_html = (
-                f'<a class="btn btn-surface btn-small" href="/review/ui/{d.id}">Открыть</a> '
-                f'<a class="btn btn-surface btn-small" href="/?draft_id={d.id}" target="_blank" rel="noreferrer">В генератор</a>'
+                f'<a class="btn btn-surface btn-small" href="/review/ui/{d.id}">Открыть</a>'
             )
             checkbox_html = f'<input type="checkbox" name="draft_ids" value="{d.id}" />'
             confidence = f"{int((d.confidence or 0) * 100)}%"
