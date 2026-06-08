@@ -1871,25 +1871,25 @@ tr:last-child td {
   border-spacing: 0 !important;
 }
 
-/* Column widths matching Figma proportions */
+/* Column widths */
 #drafts-table th:nth-child(1),
-#drafts-table td:nth-child(1) { width: 36px !important; }   /* checkbox */
+#drafts-table td:nth-child(1) { width: 28px !important; padding-left: 20px !important; }  /* checkbox */
 #drafts-table th:nth-child(2),
-#drafts-table td:nth-child(2) { width: 36px !important; }   /* № */
+#drafts-table td:nth-child(2) { width: 32px !important; }   /* № */
 #drafts-table th:nth-child(3),
-#drafts-table td:nth-child(3) { width: 17% !important; }    /* Ответ */
+#drafts-table td:nth-child(3) { width: 12% !important; }    /* Ответ */
 #drafts-table th:nth-child(4),
-#drafts-table td:nth-child(4) { width: 17% !important; }    /* Статус */
+#drafts-table td:nth-child(4) { width: 12% !important; }    /* Статус */
 #drafts-table th:nth-child(5),
 #drafts-table td:nth-child(5) { width: 7% !important; }     /* Контекст */
 #drafts-table th:nth-child(6),
-#drafts-table td:nth-child(6) { width: 14% !important; }    /* Отправитель */
+#drafts-table td:nth-child(6) { width: 15% !important; }    /* Отправитель */
 #drafts-table th:nth-child(7),
 #drafts-table td:nth-child(7) { width: 12% !important; }    /* Создан */
 #drafts-table th:nth-child(8),
-#drafts-table td:nth-child(8) { width: 18% !important; }    /* Тема */
+#drafts-table td:nth-child(8) { width: 22% !important; }    /* Тема */
 #drafts-table th:nth-child(9),
-#drafts-table td:nth-child(9) { width: 10% !important; }    /* Действие */
+#drafts-table td:nth-child(9) { width: 10% !important; padding-right: 20px !important; } /* Действие */
 
 #drafts-table th,
 #drafts-table td {
