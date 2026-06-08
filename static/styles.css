@@ -1874,30 +1874,33 @@ tr:last-child td {
 #drafts-table td {
   white-space: nowrap !important;
   vertical-align: middle !important;
-  padding: 6px 10px !important;
-  font-size: 13px !important;
+  padding: 5px 7px !important;
+  font-size: 12px !important;
   line-height: 1.35 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
-  max-width: 180px !important;
+  max-width: 140px !important;
 }
 
 #drafts-table td.inbox-cell--subject {
-  max-width: 200px !important;
+  max-width: 180px !important;
 }
 
 #drafts-table td.inbox-cell--sender {
-  max-width: 160px !important;
+  max-width: 130px !important;
 }
 
 #drafts-table td.inbox-actions {
   max-width: none !important;
   overflow: visible !important;
   white-space: nowrap !important;
+  padding: 5px 8px !important;
 }
 
 #drafts-table th {
   white-space: nowrap !important;
+  font-size: 11px !important;
+  letter-spacing: 0.03em !important;
 }
 
 .inbox-cell--sender,

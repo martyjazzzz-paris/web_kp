@@ -234,7 +234,7 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-  <link rel="stylesheet" href="/static/styles.css?v=79" />
+  <link rel="stylesheet" href="/static/styles.css?v=80" />
   <title>ВХОДЯЩИЕ КП</title>
 </head>
 <body class="review-page">
@@ -435,7 +435,7 @@ async def draft_ui(draft_id: int) -> HTMLResponse:
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-  <link rel="stylesheet" href="/static/styles.css?v=79" />
+  <link rel="stylesheet" href="/static/styles.css?v=80" />
   <title>Черновик #{draft.id}</title>
 </head>
 <body class="review-page review-detail">
