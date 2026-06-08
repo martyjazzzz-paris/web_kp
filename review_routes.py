@@ -235,7 +235,7 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-  <link rel="stylesheet" href="/static/styles.css?v=88" />
+  <link rel="stylesheet" href="/static/styles.css?v=89" />
   <title>ВХОДЯЩИЕ КП</title>
 </head>
 <body class="review-page">
@@ -436,7 +436,7 @@ async def draft_ui(draft_id: int) -> HTMLResponse:
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-  <link rel="stylesheet" href="/static/styles.css?v=88" />
+  <link rel="stylesheet" href="/static/styles.css?v=89" />
   <title>Черновик #{draft.id}</title>
 </head>
 <body class="review-page review-detail">
@@ -466,11 +466,13 @@ async def draft_ui(draft_id: int) -> HTMLResponse:
 
   <div class="card">
     <h3>Превью коммерческого предложения</h3>
-    <div class="text-block">
-      <div><strong>Клиент:</strong> {customer_name}</div>
-      <div><strong>Форма оплаты:</strong> {vat_mode}</div>
-      <div><strong>Шаблон:</strong> {template_label}</div>
-      <div><strong>Адрес доставки:</strong> {delivery_address}</div>
+    <div class="text-block preview-block">
+      <dl class="preview-meta">
+        <dt>Клиент</dt><dd>{customer_name}</dd>
+        <dt>Форма оплаты</dt><dd>{vat_mode}</dd>
+        <dt>Шаблон</dt><dd>{template_label}</dd>
+        <dt>Адрес доставки</dt><dd>{delivery_address}</dd>
+      </dl>
       <table class="preview-table">
         <thead>
           <tr><th>Номенклатура</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>
