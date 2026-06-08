@@ -177,107 +177,99 @@ if (applyRoundingBtn && applyRoundingInput) {
   });
 }
 
-function setMailProgress(progress, state = "sending") {
-  if (!mailProgressNode) return;
-  const ring = mailProgressNode.querySelector(".mail-progress-ring");
-  if (!ring) return;
+const sendBtnWrap = document.getElementById("send-btn-wrap");
+const sendBtnEl = document.getElementById("send-btn");
+const sendBtnRingFill = document.getElementById("send-btn-ring-fill");
+const sendBtnRingTrack = document.getElementById("send-btn-ring-track");
+
+function getRingPerimeter() {
+  if (!sendBtnWrap) return 500;
+  const rect = sendBtnWrap.getBoundingClientRect();
+  const w = rect.width + 4 - 3;
+  const h = rect.height + 4 - 3;
+  const r = Math.min(21, h / 2);
+  return 2 * (w - 2 * r) + 2 * Math.PI * r;
+}
+
+function initRing() {
+  if (!sendBtnRingFill || !sendBtnRingTrack || !sendBtnWrap) return;
+  const rect = sendBtnWrap.getBoundingClientRect();
+  const w = rect.width + 4;
+  const h = rect.height + 4;
+  [sendBtnRingFill, sendBtnRingTrack].forEach((el) => {
+    el.setAttribute("width", String(w - 3));
+    el.setAttribute("height", String(h - 3));
+  });
+  const p = getRingPerimeter();
+  sendBtnRingFill.style.strokeDasharray = String(p);
+  sendBtnRingFill.style.strokeDashoffset = String(p);
+}
+
+function setMailProgress(progress, state = "sending", errorMsg = "") {
+  if (!sendBtnRingFill || !sendBtnWrap) return;
+  const p = getRingPerimeter();
   const safe = Math.max(0, Math.min(100, progress));
-  const offset = MAIL_CIRCLE - (MAIL_CIRCLE * safe) / 100;
-  ring.style.strokeDashoffset = String(offset);
-  mailProgressNode.classList.remove("success", "error");
+  sendBtnRingFill.style.strokeDasharray = String(p);
+  sendBtnRingFill.style.strokeDashoffset = String(p - (p * safe) / 100);
+
+  sendBtnWrap.classList.remove("success", "error");
+
   if (state === "success") {
-    mailProgressNode.classList.add("success");
+    sendBtnWrap.classList.add("success");
+    if (sendBtnEl) sendBtnEl.textContent = "Отправлено ✓";
   } else if (state === "error") {
-    mailProgressNode.classList.add("error");
+    sendBtnWrap.classList.add("error");
+    if (sendBtnEl) sendBtnEl.textContent = errorMsg || "Ошибка отправки";
   }
 }
 
 async function pollMailJob(jobId) {
   let progress = 12;
   setMailProgress(progress, "sending");
-  if (mailProgressTextNode) {
-    mailProgressTextNode.textContent = "Отправляем письмо...";
-  }
   for (let attempt = 0; attempt < 60; attempt += 1) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const response = await fetch(`/api/email-status/${jobId}`, { cache: "no-store" });
     const data = await response.json();
     if (!response.ok || !data.ok) {
-      setMailProgress(100, "error");
-      if (mailProgressTextNode) {
-        mailProgressTextNode.textContent = "Ошибка проверки статуса отправки.";
-      }
+      setMailProgress(100, "error", "Ошибка статуса");
       return;
     }
-
     if (data.status === "sent") {
       setMailProgress(100, "success");
-      if (mailProgressTextNode) {
-        mailProgressTextNode.textContent = "Письмо отправлено успешно.";
-      }
-      window.setTimeout(() => {
-        window.location.href = "/";
-      }, 900);
+      window.setTimeout(() => { window.location.href = "/"; }, 1800);
       return;
     }
     if (data.status === "error") {
-      setMailProgress(100, "error");
-      if (mailProgressTextNode) {
-        mailProgressTextNode.textContent = `Ошибка отправки: ${data.error || "неизвестная ошибка"}`;
-      }
+      setMailProgress(100, "error", data.error || "Ошибка отправки");
       return;
     }
-
     progress = Math.min(90, progress + 6);
     setMailProgress(progress, "sending");
   }
-
-  setMailProgress(100, "error");
-  if (mailProgressTextNode) {
-    mailProgressTextNode.textContent = "Отправка заняла слишком много времени. Проверь почту чуть позже.";
-  }
+  setMailProgress(100, "error", "Таймаут отправки");
 }
 
 if (sendEmailForm) {
   sendEmailForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const submitBtn = sendEmailForm.querySelector('button[type="submit"]');
+    initRing();
     const formData = new FormData(sendEmailForm);
-
-    if (mailProgressNode) {
-      mailProgressNode.classList.add("show");
-    }
+    if (sendBtnEl) sendBtnEl.disabled = true;
     setMailProgress(5, "sending");
-    if (mailProgressTextNode) {
-      mailProgressTextNode.textContent = "Ставим письмо в очередь...";
-    }
-    if (submitBtn) {
-      submitBtn.disabled = true;
-    }
 
     try {
-      const response = await fetch("/send-email-async", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch("/send-email-async", { method: "POST", body: formData });
       const data = await response.json();
       if (!response.ok || !data.ok || !data.job_id) {
-        setMailProgress(100, "error");
-        if (mailProgressTextNode) {
-          mailProgressTextNode.textContent = `Ошибка: ${data.error || "не удалось запустить отправку"}`;
-        }
+        setMailProgress(100, "error", data.error || "Не удалось запустить отправку");
+        if (sendBtnEl) sendBtnEl.disabled = false;
       } else {
         await pollMailJob(data.job_id);
+        if (sendBtnEl) sendBtnEl.disabled = false;
       }
-    } catch (error) {
-      setMailProgress(100, "error");
-      if (mailProgressTextNode) {
-        mailProgressTextNode.textContent = "Сетевая ошибка. Попробуй еще раз.";
-      }
-    } finally {
-      if (submitBtn) {
-        submitBtn.disabled = false;
-      }
+    } catch {
+      setMailProgress(100, "error", "Сетевая ошибка");
+      if (sendBtnEl) sendBtnEl.disabled = false;
     }
   });
 }

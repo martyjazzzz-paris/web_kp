@@ -987,40 +987,55 @@ tr:last-child td {
   flex-wrap: wrap;
 }
 
-.mail-progress {
-  width: 32px;
-  height: 32px;
-  display: none;
+/* —— Send button ring progress —— */
+.send-btn-wrap {
+  position: relative;
+  display: inline-flex;
 }
 
-.mail-progress svg {
-  width: 32px;
-  height: 32px;
-  transform: rotate(-90deg);
+.send-btn-ring {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  pointer-events: none;
+  overflow: visible;
 }
 
-.mail-progress-track {
-  stroke: var(--md-outline-variant);
+.send-btn-ring rect {
+  fill: none;
+  stroke-width: 3;
 }
 
-.mail-progress-ring {
-  stroke: var(--md-primary);
+.send-btn-ring-track {
+  stroke: rgba(255, 255, 255, 0.15);
+  x: 1.5; y: 1.5;
+}
+
+.send-btn-ring-fill {
+  stroke: #4caf50;
   stroke-linecap: round;
-  stroke-dasharray: 97.39;
-  stroke-dashoffset: 97.39;
-  transition: stroke-dashoffset 0.25s linear, stroke 0.2s ease;
+  stroke-dasharray: 0;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.3s linear;
+  x: 1.5; y: 1.5;
 }
 
-.mail-progress.show {
-  display: inline-block;
+.send-btn-wrap #send-btn {
+  transition: background 0.3s ease, color 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
-.mail-progress.success .mail-progress-ring {
-  stroke: #2e7d32;
+.send-btn-wrap.success #send-btn {
+  background: #2e7d32 !important;
+  color: #ffffff !important;
 }
 
-.mail-progress.error .mail-progress-ring {
-  stroke: var(--md-error);
+.send-btn-wrap.error #send-btn {
+  background: #c62828 !important;
+  color: #ffffff !important;
 }
 
 /* —— Access page —— */
