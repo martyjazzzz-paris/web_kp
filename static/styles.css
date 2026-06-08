@@ -135,8 +135,9 @@ body::after {
 
 .site-header__logo {
   flex-shrink: 0;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px var(--brand-ring);
+  border-radius: 50%;
+  box-shadow: none;
+  background: none;
   animation: logo-spin 8s linear infinite;
 }
 
