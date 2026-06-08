@@ -104,7 +104,7 @@ def _apply_hard_qty_rules(parsed_payload: dict, email_text: str) -> dict:
 
 @router.post("/ingest")
 async def trigger_ingest() -> dict:
-    result = ingest_unseen_emails_detail(limit=20)
+    result = ingest_unseen_emails_detail(limit=200)
     if result.error:
         return {"ok": False, "ingested": result.ingested, "error": result.error}
     message = "Новых писем нет." if result.ingested == 0 else None
@@ -119,24 +119,24 @@ async def trigger_ingest() -> dict:
 @router.get("/drafts")
 async def list_drafts(limit: int = 50) -> dict:
     with get_session() as session:
-        drafts = (
-            session.query(QuoteDraft, InboundEmail)
-            .join(InboundEmail, InboundEmail.id == QuoteDraft.inbound_email_id)
-            .order_by(desc(QuoteDraft.id))
+        inbox_rows = (
+            session.query(InboundEmail, QuoteDraft)
+            .outerjoin(QuoteDraft, QuoteDraft.inbound_email_id == InboundEmail.id)
+            .order_by(desc(InboundEmail.received_at), desc(InboundEmail.id))
             .limit(limit)
             .all()
         )
         items = [
             {
-                "id": d.id,
-                "status": d.status,
-                "confidence": d.confidence,
+                "id": d.id if d else None,
+                "status": (d.status if d else "no_draft"),
+                "confidence": (d.confidence if d else 0),
                 "sender_email": e.sender_email,
                 "subject": e.subject,
-                "created_at": d.created_at.isoformat(),
-                "note": d.note,
+                "created_at": (d.created_at.isoformat() if d else e.received_at.isoformat()),
+                "note": (d.note if d else ""),
             }
-            for d, e in drafts
+            for e, d in inbox_rows
         ]
     return {"ok": True, "items": items}
 
@@ -144,14 +144,14 @@ async def list_drafts(limit: int = 50) -> dict:
 @router.get("/ui", response_class=HTMLResponse)
 async def drafts_ui(limit: int = 100) -> HTMLResponse:
     with get_session() as session:
-        drafts = (
-            session.query(QuoteDraft, InboundEmail)
-            .join(InboundEmail, InboundEmail.id == QuoteDraft.inbound_email_id)
-            .order_by(desc(QuoteDraft.id))
+        inbox_rows = (
+            session.query(InboundEmail, QuoteDraft)
+            .outerjoin(QuoteDraft, QuoteDraft.inbound_email_id == InboundEmail.id)
+            .order_by(desc(InboundEmail.received_at), desc(InboundEmail.id))
             .limit(limit)
             .all()
         )
-        draft_ids = [d.id for d, _ in drafts]
+        draft_ids = [d.id for _, d in inbox_rows if d is not None]
         generator_sent_ids: set[int] = set()
         viewed_ids: set[int] = set()
         if draft_ids:
@@ -170,33 +170,58 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
 
     rows = []
     row_no = 1
-    for d, e in drafts:
-        row_class = "draft-row-new" if d.id not in viewed_ids else ""
-        status_raw = escape(d.status or "")
-        status_human = escape(_status_label(d.status or ""))
-        status_cls = f"status-{(d.status or '').strip().replace('_', '-')}"
-        reply_sent = (d.status or "").strip() == "sent"
-        if reply_sent:
+    for e, d in inbox_rows:
+        has_draft = d is not None
+        row_class = "draft-row-new" if has_draft and d.id not in viewed_ids else ""
+        if has_draft:
+            status_raw = escape(d.status or "")
+            status_human = escape(_status_label(d.status or ""))
+            status_cls = f"status-{(d.status or '').strip().replace('_', '-')}"
+        else:
+            status_raw = "no_draft"
+            status_human = "Без черновика"
+            status_cls = "status-needs-clarification"
+
+        if has_draft and (d.status or "").strip() == "sent":
             reply_cls = "reply-sent"
             reply_label = "Отправлено"
-        elif d.id in generator_sent_ids:
+        elif has_draft and d.id in generator_sent_ids:
             reply_cls = "reply-generator"
             reply_label = "Отправлено из генератора"
-        else:
+        elif has_draft:
             reply_cls = "reply-pending"
             reply_label = "Не отправлено"
+        else:
+            reply_cls = "reply-pending"
+            reply_label = "Не обработано"
+
+        sender_value = escape(e.sender_email or "")
+        subject_value = escape(e.subject or "")
+        if has_draft:
+            action_html = (
+                f'<a class="btn btn-surface btn-small" href="/review/ui/{d.id}">Открыть</a> '
+                f'<a class="btn btn-surface btn-small" href="/?draft_id={d.id}" target="_blank" rel="noreferrer">В генератор</a>'
+            )
+            checkbox_html = f'<input type="checkbox" name="draft_ids" value="{d.id}" />'
+            confidence = f"{int((d.confidence or 0) * 100)}%"
+            created_at = d.created_at.strftime("%d.%m.%Y %H:%M")
+        else:
+            action_html = '<span class="hint">—</span>'
+            checkbox_html = ""
+            confidence = "—"
+            created_at = e.received_at.strftime("%d.%m.%Y %H:%M")
         rows.append(
             f"""
             <tr class="{row_class}">
-              <td><input type="checkbox" name="draft_ids" value="{d.id}" /></td>
+              <td>{checkbox_html}</td>
               <td>{row_no}</td>
               <td><span class="reply-chip {reply_cls}">{reply_label}</span></td>
               <td><span class="status-chip {status_cls}" title="{status_raw}">{status_human}</span></td>
-              <td>{int((d.confidence or 0) * 100)}%</td>
-              <td>{escape(e.sender_email or '')}</td>
-              <td>{escape(e.subject or '')}</td>
-              <td>{d.created_at.strftime('%d.%m.%Y %H:%M')}</td>
-              <td><a href="/review/ui/{d.id}">Открыть</a></td>
+              <td>{confidence}</td>
+              <td class="inbox-cell inbox-cell--sender" title="{sender_value}">{sender_value}</td>
+              <td class="inbox-cell inbox-cell--subject" title="{subject_value}">{subject_value}</td>
+              <td class="inbox-cell inbox-cell--date">{created_at}</td>
+              <td class="inbox-actions">{action_html}</td>
             </tr>
             """
         )
@@ -209,7 +234,7 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-  <link rel="stylesheet" href="/static/styles.css?v=60" />
+  <link rel="stylesheet" href="/static/styles.css?v=78" />
   <title>ВХОДЯЩИЕ КП</title>
 </head>
 <body class="review-page">
@@ -229,21 +254,23 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
   <p class="review-layout__lead">Выберите входящие и работайте с ними как со списком задач. Новые письма выделены жирным.</p>
   <p id="ingest-list-note" class="hint"></p>
   <div class="actions">
-    <button type="button" id="check-inbox-btn">Проверить входящие</button>
+    <button type="button" class="btn btn-small btn-surface" id="check-inbox-btn">Обновить почту</button>
     <form method="post" action="/review/ui/delete-selected" id="delete-selected-form">
-      <button class="danger" type="submit">Удалить выбранные</button>
+      <button class="btn btn-small" type="submit">Удалить выбранные</button>
     </form>
   </div>
-  <table id="drafts-table">
-    <thead>
-      <tr>
-        <th><input type="checkbox" id="select-all-drafts" /></th><th>№</th><th>Ответ</th><th>Статус</th><th>Уверенность</th><th>Отправитель</th><th>Тема</th><th>Создан</th><th>Действие</th>
-      </tr>
-    </thead>
-    <tbody>
-      {''.join(rows) if rows else '<tr><td colspan="9">Черновиков пока нет</td></tr>'}
-    </tbody>
-  </table>
+  <div class="review-table-wrap">
+    <table id="drafts-table">
+      <thead>
+        <tr>
+          <th><input type="checkbox" id="select-all-drafts" /></th><th>№</th><th>Ответ</th><th>Статус</th><th>Уверенность</th><th>Отправитель</th><th>Тема</th><th>Создан</th><th>Действие</th>
+        </tr>
+      </thead>
+      <tbody>
+        {''.join(rows) if rows else '<tr><td colspan="9">Входящих писем пока нет</td></tr>'}
+      </tbody>
+    </table>
+  </div>
   </main>
   <script>
     const deleteForm = document.getElementById("delete-selected-form");
@@ -408,13 +435,14 @@ async def draft_ui(draft_id: int) -> HTMLResponse:
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-  <link rel="stylesheet" href="/static/styles.css?v=60" />
+  <link rel="stylesheet" href="/static/styles.css?v=78" />
   <title>Черновик #{draft.id}</title>
 </head>
 <body class="review-page review-detail">
   <div class="actions" style="margin-bottom:12px;">
-    <a class="btn back" href="/review/ui">Назад к входящим</a>
-    <button id="refresh-inbox-btn" class="btn aux" type="button">Входящие</button>
+    <a class="btn btn-surface btn-small back" href="/review/ui">Назад к входящим</a>
+    <a class="btn btn-small" href="/?draft_id={draft.id}" target="_blank" rel="noreferrer">В генератор</a>
+    <button id="refresh-inbox-btn" class="btn btn-surface btn-small aux" type="button">Входящие</button>
     <p id="refresh-inbox-note" class="ingest-note"></p>
   </div>
 
@@ -459,11 +487,11 @@ async def draft_ui(draft_id: int) -> HTMLResponse:
 
   <div class="actions">
     <form id="approve-form" method="post" action="/review/ui/{draft.id}/approve">
-      <button id="approve-btn" class="ok" type="submit">Подтвердить</button>
+      <button id="approve-btn" class="btn btn-small" type="submit">Подтвердить</button>
     </form>
     <form method="post" action="/review/ui/{draft.id}/reject">
       <input type="text" name="reason" placeholder="Причина (опционально)" />
-      <button class="bad" type="submit">Отклонить</button>
+      <button class="btn btn-surface btn-small" type="submit">Отклонить</button>
     </form>
   </div>
 

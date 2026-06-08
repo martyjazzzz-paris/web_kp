@@ -1,20 +1,22 @@
 {
-  "version": 60,
-  "mark": "v60-top-split",
+  "version": 75,
+  "mark": "v75-top-split",
   "layout_html_class": "top-split",
   "forbidden_in_index_html": ["dashboard-grid", "class=\"dashboard-grid\""],
   "required_markers": {
     "styles.css": [
-      "design-mark: v60-top-split",
-      "--design-version: 60",
+      "design-mark: v75-top-split",
+      "--design-version: 75",
       ".top-split",
       ".btn-remove-row",
       "body::before"
     ],
     "index.html": [
       "top-split",
-      "styles.css?v=60",
-      "reload-page-btn"
+      "styles.css?v=78",
+      "reload-page-btn",
+      "icon-trash",
+      "actions--preview"
     ]
   },
   "cache_bust_files": [
@@ -22,8 +24,8 @@
     "main.py",
     "review_routes.py"
   ],
-  "cache_bust_value": "60",
+  "cache_bust_value": "78",
   "deploy_script": "./fix_prod_now.sh",
   "locked": "2026-06-01",
-  "notes": "Baseline prod: inbox слева + форма справа, фон #f5f3f0, без lava/glass, оранжевая корзина в строках."
+  "notes": "Matched review/detail buttons to standard shape and removed mobile incoming horizontal overflow."
 }

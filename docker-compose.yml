@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     ports:
       # На проде перед контейнером стоит nginx на :80
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:18000:8000"
     env_file:
       - .env
     environment:
@@ -13,6 +13,8 @@ services:
       WEB_KP_DATABASE_URL: sqlite:////app/data/web_kp.db
     volumes:
       - ./data:/app/data
-      # Стили и шаблоны с диска сервера — rsync сразу виден без пересборки образа
+      # Стили, шаблоны и роуты с диска сервера — rsync сразу виден без пересборки образа
       - ./static:/app/static:ro
       - ./templates:/app/templates:ro
+      - ./review_routes.py:/app/review_routes.py:ro
+      - ./main.py:/app/main.py:ro

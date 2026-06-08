@@ -12,7 +12,12 @@ if [[ -z "$NEW" ]] || ! [[ "$NEW" =~ ^[0-9]+$ ]]; then
   exit 1
 fi
 
-OLD="$(python3 -c "import json; print(json.load(open('${ROOT}/DESIGN_BASELINE.json'))['version']")"
+OLD="$(python3 - <<PY
+import json
+from pathlib import Path
+print(json.loads(Path("${ROOT}/DESIGN_BASELINE.json").read_text())["version"])
+PY
+)"
 STYLES="${ROOT}/static/styles.css"
 
 if [[ "$NEW" -le "$OLD" ]]; then

@@ -199,6 +199,7 @@ tr.draft-row-new td:nth-child(7) {
 }
 
 .card--settings {
+  overflow: hidden;
   padding: 16px 23px 18px;
   border-radius: var(--card-radius-form);
   border: 1px solid var(--border);
@@ -222,6 +223,7 @@ tr.draft-row-new td:nth-child(7) {
 }
 
 .kpi-card--inbox {
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -341,6 +343,7 @@ tr.draft-row-new td:nth-child(7) {
 }
 
 .kpi-card {
+  overflow: hidden;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--card-radius-kpi);
@@ -442,6 +445,7 @@ tr.draft-row-new td:nth-child(7) {
   --col-action: 48px;
   --row-gap: 12px;
 
+  overflow: hidden;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--card-radius-form);
@@ -1067,9 +1071,10 @@ tr:last-child td {
   width: 100%;
   overflow-x: auto;
   margin-bottom: 20px;
-  border: 1px solid var(--md-outline-variant);
+  border: none;
   border-radius: var(--md-shape-sm);
   background: var(--md-surface-container-lowest);
+  box-shadow: 0 2px 8px rgba(28, 25, 23, 0.10);
 }
 
 .review-layout table,
@@ -1815,8 +1820,10 @@ tr:last-child td {
 }
 
 .review-layout .actions .btn.btn-surface {
-  background: #f5f5f4 !important;
+  background: #ebebea !important;
   color: #292524 !important;
+  border: none !important;
+  box-shadow: 0 0 0 1.5px rgba(28, 25, 23, 0.18) !important;
 }
 
 .review-layout .actions form .btn:not(.btn-surface) {
@@ -1825,11 +1832,35 @@ tr:last-child td {
 }
 
 .review-table-wrap {
-  overflow-x: auto !important;
-  border: 1px solid var(--md-outline-variant) !important;
+  overflow: hidden !important;
+  border: none !important;
   border-radius: 12px !important;
-  background: #ffffff !important;
+  background: var(--md-surface-container-high) !important;
+  background-clip: padding-box !important;
+  box-shadow: 0 2px 8px rgba(28, 25, 23, 0.08) !important;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  isolation: isolate;
 }
+
+#drafts-table tbody td {
+  background: #ffffff !important;
+  background-clip: padding-box;
+}
+
+#drafts-table th {
+  background-clip: padding-box;
+}
+
+#drafts-table th,
+#drafts-table td {
+  border-bottom: 1px solid #f0edeb !important;
+}
+
+#drafts-table tr:last-child td {
+  border-bottom: none !important;
+}
+
 
 #drafts-table {
   width: 100% !important;
@@ -1842,8 +1873,8 @@ tr:last-child td {
 #drafts-table th,
 #drafts-table td {
   white-space: normal !important;
-  vertical-align: top !important;
-  padding: 10px 10px !important;
+  vertical-align: middle !important;
+  padding: 6px 10px !important;
   font-size: 13px !important;
   line-height: 1.35 !important;
 }
@@ -1864,11 +1895,21 @@ tr:last-child td {
 }
 
 .inbox-actions .btn {
-  min-width: 108px !important;
-  min-height: 36px !important;
-  padding: 8px 12px !important;
+  min-width: 0 !important;
+  min-height: 40px !important;
+  padding: 10px 18px !important;
   font-size: 13px !important;
   font-weight: 500 !important;
+  border-radius: 9999px !important;
+  color: #292524 !important;
+  background: #f5f5f4 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.inbox-actions .btn:hover {
+  background: #ebebea !important;
+  filter: none !important;
 }
 
 .inbox-actions .btn + .btn {

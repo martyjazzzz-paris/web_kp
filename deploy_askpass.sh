@@ -13,6 +13,7 @@ fi
 HOST="root@72.56.237.74"
 REMOTE="/root/BOT/web_kp"
 VER=$(sed -n 's/.*--design-version:[[:space:]]*\([0-9]*\).*/\1/p' static/styles.css | head -1)
+MARK=$(grep -m1 'design-mark:' static/styles.css | sed 's/.*design-mark:[[:space:]]*//' | tr -d ' */')
 echo "=== Деплой v${VER} ==="
 
 ASKPASS_SCRIPT="$(mktemp)"
@@ -35,11 +36,11 @@ rsync -avz -e "$RSYNC_E" static/ "$HOST:$REMOTE/static/"
 step "3 templates"
 rsync -avz -e "$RSYNC_E" templates/ "$HOST:$REMOTE/templates/"
 
-step "4 main.py + compose"
-rsync -avz -e "$RSYNC_E" main.py docker-compose.yml "$HOST:$REMOTE/"
+step "4 main.py + compose + routes"
+rsync -avz -e "$RSYNC_E" main.py docker-compose.yml review_routes.py "$HOST:$REMOTE/"
 
 step "5 проверка на сервере"
-ssh $SSH_OPTS "$HOST" "grep -Fq 'design-version: $VER' $REMOTE/static/styles.css && grep -Fq v60-top-split $REMOTE/static/styles.css"
+ssh $SSH_OPTS "$HOST" "grep -Fq 'design-version: $VER' $REMOTE/static/styles.css && grep -Fq '$MARK' $REMOTE/static/styles.css"
 
 step "6 docker"
 ssh $SSH_OPTS "$HOST" "cd $REMOTE && \

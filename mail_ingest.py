@@ -150,11 +150,11 @@ def ingest_unseen_emails_detail(limit: int = 10) -> IngestResult:
         with imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT) as client:
             client.login(IMAP_USER, IMAP_PASSWORD)
             client.select("INBOX")
-            typ, data = client.search(None, "UNSEEN")
+            typ, data = client.search(None, "ALL")
             if typ != "OK":
-                return IngestResult(ingested=0, error="IMAP: не удалось выполнить поиск UNSEEN")
+                return IngestResult(ingested=0, error="IMAP: не удалось выполнить поиск писем в INBOX")
 
-            ids = data[0].split()[:limit]
+            ids = list(reversed(data[0].split()))[:limit]
 
             with get_session() as session:
                 for msg_id in ids:

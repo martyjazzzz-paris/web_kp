@@ -11,9 +11,24 @@ if [[ ! -f "$BASELINE" ]]; then
   exit 1
 fi
 
-VER="$(python3 -c "import json; print(json.load(open('$BASELINE'))['version'])")"
-MARK="$(python3 -c "import json; print(json.load(open('$BASELINE'))['mark'])")"
-CACHE="$(python3 -c "import json; print(json.load(open('$BASELINE'))['cache_bust_value'])")"
+VER="$(python3 - <<PY
+import json
+from pathlib import Path
+print(json.loads(Path("${BASELINE}").read_text())["version"])
+PY
+)"
+MARK="$(python3 - <<PY
+import json
+from pathlib import Path
+print(json.loads(Path("${BASELINE}").read_text())["mark"])
+PY
+)"
+CACHE="$(python3 - <<PY
+import json
+from pathlib import Path
+print(json.loads(Path("${BASELINE}").read_text())["cache_bust_value"])
+PY
+)"
 
 fail() { echo "BASELINE FAIL: $*" >&2; exit 1; }
 
