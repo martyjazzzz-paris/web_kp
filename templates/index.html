@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-store" />
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
     <title>Генератор КП</title>
-    <link rel="stylesheet" href="/static/styles.css?v=94" />
+    <link rel="stylesheet" href="/static/styles.css?v=95" />
   </head>
   <body>
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none" aria-hidden="true">
@@ -81,9 +81,6 @@
       <p class="hint">Письмо поставлено в отправку. Если не пришло за 1-2 минуты, попробуй отправить еще раз.</p>
       {% elif mail_status == "error" and mail_error %}
       <p class="hint" style="color:#b00020;">Ошибка отправки: {{ mail_error }}</p>
-      {% endif %}
-      {% if prefill_draft_id %}
-      <p class="hint">Форма заполнена из входящего #{{ prefill_draft_id }}.</p>
       {% endif %}
 
       <form method="post" action="/preview" id="offer-form">

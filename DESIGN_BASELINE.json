@@ -13,7 +13,7 @@
     ],
     "index.html": [
       "top-split",
-      "styles.css?v=94",
+      "styles.css?v=95",
       "reload-page-btn",
       "icon-trash",
       "actions--preview"
@@ -24,7 +24,7 @@
     "main.py",
     "review_routes.py"
   ],
-  "cache_bust_value": "94",
+  "cache_bust_value": "95",
   "deploy_script": "./fix_prod_now.sh",
   "locked": "2026-06-01",
   "notes": "Matched review/detail buttons to standard shape and removed mobile incoming horizontal overflow."
