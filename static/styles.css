@@ -1873,7 +1873,7 @@ tr:last-child td {
 
 /* Column widths */
 #drafts-table th:nth-child(1),
-#drafts-table td:nth-child(1) { width: 28px !important; padding-left: 20px !important; }  /* checkbox */
+#drafts-table td:nth-child(1) { width: 28px !important; padding-left: 18px !important; }  /* checkbox */
 #drafts-table th:nth-child(2),
 #drafts-table td:nth-child(2) { width: 32px !important; }   /* № */
 #drafts-table th:nth-child(3),
