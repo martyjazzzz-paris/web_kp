@@ -1870,9 +1870,12 @@ tr:last-child td {
   background: var(--md-surface-container-high) !important;
   background-clip: padding-box !important;
   box-shadow: 0 2px 8px rgba(28, 25, 23, 0.08) !important;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  isolation: isolate;
+  transform: translateZ(0) !important;
+  -webkit-transform: translateZ(0) !important;
+  isolation: isolate !important;
+  /* Safari: force hardware clipping at rounded corners */
+  -webkit-mask-image: -webkit-radial-gradient(white, black) !important;
+  mask-image: radial-gradient(white, black) !important;
 }
 
 #drafts-table tbody td {
