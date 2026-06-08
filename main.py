@@ -6,6 +6,7 @@ import ssl
 import logging
 import threading
 import math
+import json
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 from email.message import EmailMessage
@@ -26,9 +27,7 @@ from db import get_session, init_db
 from models import InboundEmail, QuoteActionLog, QuoteDraft
 from review_routes import router as review_router
 from paths import (
-    LOGO_PATH,
     SIGNATURE_IMAGE_PATH,
-    STAMP_IMAGE_PATH,
     TEMPLATE_BEZ_PATH,
     configure_pdf_font,
     resolve_logo_path,
@@ -88,7 +87,7 @@ def health_design() -> JSONResponse:
         {
             "design_version": _read_design_version(),
             "has_top_split": ".top-split" in css_text,
-            "has_design_mark_v60": "v60-top-split" in css_text,
+            "has_design_mark": "top-split" in css_text,
             "css_bytes": css_path.stat().st_size if css_path.is_file() else 0,
         }
     )
@@ -574,6 +573,46 @@ def _no_cache_html(response: HTMLResponse) -> HTMLResponse:
     return response
 
 
+def _prefill_from_draft(draft: QuoteDraft | None, email_row: InboundEmail | None) -> dict:
+    if not draft:
+        return {
+            "recipient_email": (email_row.sender_email if email_row else "") or "",
+            "customer_name": "",
+            "delivery_address": "",
+            "rows": [],
+        }
+
+    payload: dict = {}
+    try:
+        payload = json.loads(draft.parsed_json or "{}")
+    except Exception:
+        payload = {}
+
+    rows: list[dict[str, float | str]] = []
+    for row in payload.get("rows", []) if isinstance(payload, dict) else []:
+        if not isinstance(row, dict):
+            continue
+        item = str(row.get("item_name", "")).strip()
+        try:
+            qty = float(row.get("qty", 0) or 0)
+        except Exception:
+            qty = 0.0
+        try:
+            price = float(row.get("price", 0) or 0)
+        except Exception:
+            price = 0.0
+        if not item or qty <= 0:
+            continue
+        rows.append({"item_name": item, "qty": qty, "price": max(0.0, price)})
+
+    return {
+        "recipient_email": (email_row.sender_email if email_row else "") or "",
+        "customer_name": str(payload.get("customer_name", "")).strip() if isinstance(payload, dict) else "",
+        "delivery_address": str(payload.get("delivery_address", "")).strip() if isinstance(payload, dict) else "",
+        "rows": rows,
+    }
+
+
 @app.get("/api/nomenclature")
 async def api_nomenclature() -> JSONResponse:
     """Диагностика: какой список реально отдаёт этот процесс сервера."""
@@ -584,7 +623,7 @@ async def api_nomenclature() -> JSONResponse:
 
 
 @app.get("/", response_class=HTMLResponse)
-async def home(request: Request) -> HTMLResponse:
+async def home(request: Request, draft_id: int | None = None) -> HTMLResponse:
     mail_status = request.query_params.get("mail_status")
     mail_error = request.query_params.get("mail_error")
     now = datetime.utcnow()
@@ -599,6 +638,7 @@ async def home(request: Request) -> HTMLResponse:
             y -= 1
     month_buckets.reverse()
 
+    prefill = {"recipient_email": "", "customer_name": "", "delivery_address": "", "rows": []}
     with get_session() as session:
         draft_rows = (
             session.query(QuoteDraft.id, QuoteDraft.status, QuoteDraft.created_at)
@@ -621,6 +661,12 @@ async def home(request: Request) -> HTMLResponse:
                 )
                 .all()
             )
+        if draft_id and draft_id > 0:
+            draft = session.query(QuoteDraft).filter(QuoteDraft.id == draft_id).first()
+            email_row = None
+            if draft:
+                email_row = session.query(InboundEmail).filter(InboundEmail.id == draft.inbound_email_id).first()
+            prefill = _prefill_from_draft(draft, email_row)
 
     sent_ids: set[int] = {int(draft_id) for draft_id, status, _ in draft_rows if status == "sent"}
     generated_ids: set[int] = set()
@@ -692,6 +738,9 @@ async def home(request: Request) -> HTMLResponse:
         "kpi_generated_total": generated_total,
         "kpi_sent_points": sent_points,
         "kpi_generated_points": generated_points,
+        "prefill": prefill,
+        "prefill_draft_id": draft_id if draft_id and draft_id > 0 else None,
+        "preview_recipient_email": prefill.get("recipient_email", ""),
     }
     return _no_cache_html(templates.TemplateResponse(request, "index.html", context))
 
@@ -705,7 +754,7 @@ async def access_page(request: Request, next: str = "/") -> HTMLResponse:
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-    <link rel="stylesheet" href="/static/styles.css?v=60" />
+    <link rel="stylesheet" href="/static/styles.css?v=75" />
     <title>Доступ к сервису</title>
   </head>
   <body class="access-gate">
@@ -748,6 +797,7 @@ async def preview(
     include_signature: str | None = Form(default=None),
     customer_name: str = Form(default=""),
     delivery_address: str = Form(default=""),
+    recipient_email: str = Form(default=""),
     item_name: list[str] = Form(...),
     qty: list[str] = Form(...),
     price: list[str] = Form(...),
@@ -770,6 +820,9 @@ async def preview(
         "preview": offer,
         "mail_status": None,
         "mail_error": None,
+        "prefill": {"recipient_email": "", "customer_name": customer_name, "delivery_address": delivery_address, "rows": []},
+        "prefill_draft_id": None,
+        "preview_recipient_email": recipient_email.strip(),
     }
     return _no_cache_html(templates.TemplateResponse(request, "index.html", context))
 

@@ -18,9 +18,7 @@ from pypdf import PdfReader, PdfWriter
 from pydantic import BaseModel, Field, field_validator
 
 from paths import (
-    LOGO_PATH,
     SIGNATURE_IMAGE_PATH,
-    STAMP_IMAGE_PATH,
     TEMPLATE_BEZ_PATH,
     configure_pdf_font,
     resolve_logo_path,

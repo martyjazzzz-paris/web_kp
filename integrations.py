@@ -4,8 +4,6 @@ from __future__ import annotations
 
 import imaplib
 import os
-import smtplib
-import ssl
 from dataclasses import dataclass
 
 import httpx
