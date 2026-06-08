@@ -156,6 +156,7 @@ body::after {
   letter-spacing: -0.02em;
   color: var(--ink);
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .site-header__tagline {
