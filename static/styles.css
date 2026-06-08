@@ -1864,37 +1864,54 @@ tr:last-child td {
 
 #drafts-table {
   width: 100% !important;
-  min-width: 980px !important;
-  table-layout: auto !important;
+  min-width: 1200px !important;
+  table-layout: fixed !important;
   border-collapse: separate !important;
   border-spacing: 0 !important;
 }
+
+/* Column widths matching Figma proportions */
+#drafts-table th:nth-child(1),
+#drafts-table td:nth-child(1) { width: 36px !important; }   /* checkbox */
+#drafts-table th:nth-child(2),
+#drafts-table td:nth-child(2) { width: 36px !important; }   /* № */
+#drafts-table th:nth-child(3),
+#drafts-table td:nth-child(3) { width: 17% !important; }    /* Ответ */
+#drafts-table th:nth-child(4),
+#drafts-table td:nth-child(4) { width: 17% !important; }    /* Статус */
+#drafts-table th:nth-child(5),
+#drafts-table td:nth-child(5) { width: 7% !important; }     /* Контекст */
+#drafts-table th:nth-child(6),
+#drafts-table td:nth-child(6) { width: 14% !important; }    /* Отправитель */
+#drafts-table th:nth-child(7),
+#drafts-table td:nth-child(7) { width: 12% !important; }    /* Создан */
+#drafts-table th:nth-child(8),
+#drafts-table td:nth-child(8) { width: 18% !important; }    /* Тема */
+#drafts-table th:nth-child(9),
+#drafts-table td:nth-child(9) { width: 10% !important; }    /* Действие */
 
 #drafts-table th,
 #drafts-table td {
   white-space: nowrap !important;
   vertical-align: middle !important;
-  padding: 5px 7px !important;
-  font-size: 12px !important;
+  padding: 16px 10px !important;
+  font-size: 13px !important;
   line-height: 1.35 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
-  max-width: 140px !important;
-}
-
-#drafts-table td.inbox-cell--subject {
-  max-width: 180px !important;
-}
-
-#drafts-table td.inbox-cell--sender {
-  max-width: 130px !important;
 }
 
 #drafts-table td.inbox-actions {
-  max-width: none !important;
   overflow: visible !important;
   white-space: nowrap !important;
-  padding: 5px 8px !important;
+}
+
+/* Action button in table */
+.inbox-action-btn {
+  min-height: 36px !important;
+  padding: 6px 18px !important;
+  border-radius: 9999px !important;
+  font-size: 13px !important;
 }
 
 #drafts-table th {

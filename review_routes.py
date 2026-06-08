@@ -199,10 +199,10 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
         subject_value = escape(e.subject or "")
         if has_draft:
             action_html = (
-                f'<a class="btn btn-surface btn-small" href="/review/ui/{d.id}">Открыть</a>'
+                f'<a class="btn btn-surface btn-small inbox-action-btn" href="/review/ui/{d.id}">Ответить</a>'
             )
             checkbox_html = f'<input type="checkbox" name="draft_ids" value="{d.id}" />'
-            confidence = f"{int((d.confidence or 0) * 100)}%"
+            confidence = f"{int((d.confidence or 0) * 100)}%" if (d.confidence or 0) > 0 else "—"
             created_at = d.created_at.strftime("%d.%m.%Y %H:%M")
         else:
             action_html = '<span class="hint">—</span>'
@@ -218,8 +218,8 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
               <td><span class="status-chip {status_cls}" title="{status_raw}">{status_human}</span></td>
               <td>{confidence}</td>
               <td class="inbox-cell inbox-cell--sender" title="{sender_value}">{sender_value}</td>
-              <td class="inbox-cell inbox-cell--subject" title="{subject_value}">{subject_value}</td>
               <td class="inbox-cell inbox-cell--date">{created_at}</td>
+              <td class="inbox-cell inbox-cell--subject" title="{subject_value}">{subject_value}</td>
               <td class="inbox-actions">{action_html}</td>
             </tr>
             """
@@ -233,7 +233,7 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-  <link rel="stylesheet" href="/static/styles.css?v=80" />
+  <link rel="stylesheet" href="/static/styles.css?v=81" />
   <title>ВХОДЯЩИЕ КП</title>
 </head>
 <body class="review-page">
@@ -262,7 +262,7 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
     <table id="drafts-table">
       <thead>
         <tr>
-          <th><input type="checkbox" id="select-all-drafts" /></th><th>№</th><th>Ответ</th><th>Статус</th><th>Уверенность</th><th>Отправитель</th><th>Тема</th><th>Создан</th><th>Действие</th>
+          <th><input type="checkbox" id="select-all-drafts" /></th><th>№</th><th>Ответ</th><th>Статус</th><th>Контекст</th><th>Отправитель</th><th>Создан</th><th>Тема</th><th>Действие</th>
         </tr>
       </thead>
       <tbody>
@@ -434,7 +434,7 @@ async def draft_ui(draft_id: int) -> HTMLResponse:
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-  <link rel="stylesheet" href="/static/styles.css?v=80" />
+  <link rel="stylesheet" href="/static/styles.css?v=81" />
   <title>Черновик #{draft.id}</title>
 </head>
 <body class="review-page review-detail">
