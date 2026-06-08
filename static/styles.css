@@ -2056,34 +2056,47 @@ tr:last-child td {
 
   #drafts-table {
     min-width: 0 !important;
+    width: 100% !important;
     table-layout: fixed !important;
   }
 
   #drafts-table th,
   #drafts-table td {
-    font-size: 12px !important;
-    padding: 8px 6px !important;
-    white-space: normal !important;
-    word-break: break-word !important;
-    overflow-wrap: anywhere !important;
+    font-size: 13px !important;
+    padding: 12px 8px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
   }
 
-  /* Keep compact essential columns to avoid horizontal scrolling */
+  /* Mobile: show only №, Отправитель, Создан, Действие */
+  #drafts-table th:nth-child(1),
+  #drafts-table td:nth-child(1),
   #drafts-table th:nth-child(3),
   #drafts-table td:nth-child(3),
+  #drafts-table th:nth-child(4),
+  #drafts-table td:nth-child(4),
   #drafts-table th:nth-child(5),
   #drafts-table td:nth-child(5),
-  #drafts-table th:nth-child(6),
-  #drafts-table td:nth-child(6),
   #drafts-table th:nth-child(8),
   #drafts-table td:nth-child(8) {
     display: none !important;
   }
 
+  /* Mobile column widths: №, Отправитель, Дата, Кнопка */
+  #drafts-table th:nth-child(2),
+  #drafts-table td:nth-child(2) { width: 32px !important; padding-left: 12px !important; }
+  #drafts-table th:nth-child(6),
+  #drafts-table td:nth-child(6) { width: auto !important; }
+  #drafts-table th:nth-child(7),
+  #drafts-table td:nth-child(7) { width: 110px !important; }
+  #drafts-table th:nth-child(9),
+  #drafts-table td:nth-child(9) { width: 90px !important; padding-right: 12px !important; overflow: visible !important; }
+
   .inbox-actions .btn {
-    min-width: 84px !important;
+    min-width: 76px !important;
     min-height: 34px !important;
-    padding: 7px 10px !important;
+    padding: 6px 10px !important;
     font-size: 12px !important;
   }
 }
