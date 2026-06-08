@@ -1052,6 +1052,7 @@ tr:last-child td {
 }
 
 .review-layout {
+  max-width: none !important;
   padding-bottom: 32px;
 }
 
@@ -1864,7 +1865,7 @@ tr:last-child td {
 
 #drafts-table {
   width: 100% !important;
-  min-width: 1200px !important;
+  min-width: 1400px !important;
   table-layout: fixed !important;
   border-collapse: separate !important;
   border-spacing: 0 !important;
