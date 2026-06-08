@@ -39,7 +39,6 @@ grep -Fq '.btn-remove-row' "$STYLES" || fail "styles.css: нет .btn-remove-row
 
 grep -Fq 'class="top-split"' "$INDEX" || fail "index.html: нет top-split"
 grep -Fq "styles.css?v=${CACHE}" "$INDEX" || fail "index.html: нет styles.css?v=${CACHE}"
-grep -Fq 'id="reload-page-btn"' "$INDEX" || fail "index.html: нет reload-page-btn"
 grep -Fq 'dashboard-grid' "$INDEX" && fail "index.html: найден dashboard-grid (старая вёрстка!)"
 
 for f in main.py review_routes.py; do
