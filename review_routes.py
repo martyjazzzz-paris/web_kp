@@ -235,7 +235,7 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-  <link rel="stylesheet" href="/static/styles.css?v=89" />
+  <link rel="stylesheet" href="/static/styles.css?v=92" />
   <title>ВХОДЯЩИЕ КП</title>
 </head>
 <body class="review-page">
@@ -252,7 +252,7 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
     </nav>
   </header>
   <main class="container review-layout">
-  <p class="review-layout__lead">Выберите входящие и работайте с ними как со списком задач. Новые письма выделены жирным.</p>
+  <p class="review-layout__lead">Выберите входящие и работайте с ними как со списком задач.</p>
   <p id="ingest-list-note" class="hint"></p>
   <div class="actions">
     <button type="button" class="btn btn-small btn-surface" id="check-inbox-btn">Обновить почту</button>
@@ -436,7 +436,7 @@ async def draft_ui(draft_id: int) -> HTMLResponse:
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-  <link rel="stylesheet" href="/static/styles.css?v=89" />
+  <link rel="stylesheet" href="/static/styles.css?v=92" />
   <title>Черновик #{draft.id}</title>
 </head>
 <body class="review-page review-detail">
