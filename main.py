@@ -754,7 +754,7 @@ async def access_page(request: Request, next: str = "/") -> HTMLResponse:
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-    <link rel="stylesheet" href="/static/styles.css?v=90" />
+    <link rel="stylesheet" href="/static/styles.css?v=91" />
     <title>Доступ к сервису</title>
   </head>
   <body class="access-gate">

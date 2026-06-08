@@ -1865,26 +1865,18 @@ tr:last-child td {
 
 .review-table-wrap {
   overflow: hidden !important;
-  border: none !important;
-  border-radius: 12px !important;
-  background: var(--md-surface-container-high) !important;
-  background-clip: padding-box !important;
-  box-shadow: 0 2px 8px rgba(28, 25, 23, 0.08) !important;
-  transform: translateZ(0) !important;
-  -webkit-transform: translateZ(0) !important;
-  isolation: isolate !important;
-  /* Safari: force hardware clipping at rounded corners */
-  -webkit-mask-image: -webkit-radial-gradient(white, black) !important;
-  mask-image: radial-gradient(white, black) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--card-radius-form) !important;
+  background: var(--surface) !important;
+  box-shadow: var(--card-shadow-soft) !important;
 }
 
 #drafts-table tbody td {
   background: #ffffff !important;
-  background-clip: padding-box;
 }
 
 #drafts-table th {
-  background-clip: padding-box;
+  background: var(--md-surface-container-high) !important;
 }
 
 #drafts-table th,
