@@ -235,18 +235,20 @@ async def drafts_ui(limit: int = 100) -> HTMLResponse:
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-  <link rel="stylesheet" href="/static/styles.css?v=102" />
+  <link rel="stylesheet" href="/static/styles.css?v=103" />
   <title>ВХОДЯЩИЕ КП</title>
 </head>
 <body class="review-page">
   <header class="site-header">
-    <a class="site-header__brand" href="/">
-      <img src="/static/favicon.svg" alt="" class="site-header__logo" width="36" height="36" />
-      <div>
-        <h1>Входящие</h1>
-        <p class="site-header__tagline">Почта и черновики</p>
-      </div>
-    </a>
+    <div class="site-header__inner">
+      <a class="site-header__brand" href="/">
+        <img src="/static/favicon.svg" alt="" class="site-header__logo" width="36" height="36" />
+        <div>
+          <h1>Входящие</h1>
+          <p class="site-header__tagline">Почта и черновики</p>
+        </div>
+      </a>
+    </div>
   </header>
   <main class="container review-layout">
   <p id="ingest-list-note" class="hint"></p>
@@ -432,7 +434,7 @@ async def draft_ui(draft_id: int) -> HTMLResponse:
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=1" />
-  <link rel="stylesheet" href="/static/styles.css?v=102" />
+  <link rel="stylesheet" href="/static/styles.css?v=103" />
   <title>Черновик #{draft.id}</title>
 </head>
 <body class="review-page review-detail">

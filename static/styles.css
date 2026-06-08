@@ -116,23 +116,23 @@ body::after {
   position: sticky;
   top: 0;
   z-index: 100;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 24px 15px;
+  padding: 0 24px;
   background: rgba(255, 255, 255, 0.92);
   border-bottom: 1px solid var(--border);
   box-shadow: 0 1px 0 rgba(28, 25, 23, 0.04);
 }
 
-.site-header__brand {
-  grid-column: 2;
+.site-header__inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0 15px;
 }
 
 .site-header__nav {
-  grid-column: 3;
-  justify-self: end;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -809,20 +809,6 @@ select {
 }
 
 @media (max-width: 768px) {
-  .site-header {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .site-header__brand {
-    grid-column: unset;
-  }
-
-  .site-header__nav {
-    grid-column: unset;
-    justify-self: unset;
-  }
-
   #offer-form > .actions--preview {
     order: 2;
     margin: 4px 0 12px;
