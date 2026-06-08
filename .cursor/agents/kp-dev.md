@@ -40,13 +40,7 @@ description: Специалист по проекту web_kp (Генератор
 
 ## Как работать с дизайн-baseline
 
-После любых правок HTML/CSS проверяй, что маркеры на месте:
-- `design-mark: v75-top-split` в `styles.css`
-- `--design-version: 75` в `styles.css`
-- Классы `.top-split`, `.btn-remove-row`, `body::before` в `styles.css`
-- Классы `top-split`, `styles.css?v=75`, `reload-page-btn`, `icon-trash`, `actions--preview` в `index.html`
-- Отсутствие `dashboard-grid` в `index.html`
-
+После любых правок HTML/CSS проверяй маркеры через `scripts/verify_baseline.sh`.
 При изменении версии — синхронно обновлять `?v=` в `index.html`, `main.py` и `review_routes.py`.
 
 ## При старте задачи
