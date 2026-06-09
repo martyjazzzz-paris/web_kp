@@ -758,6 +758,8 @@ select {
   stroke: currentColor;
   margin: 0;
   vertical-align: middle;
+  position: relative;
+  top: -3px;
 }
 
 .btn-remove-row:hover,
