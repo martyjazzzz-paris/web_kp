@@ -1105,6 +1105,12 @@ tr:last-child td {
   padding-bottom: 32px;
 }
 
+@media (min-width: 769px) {
+  .review-layout {
+    margin-top: -12px;
+  }
+}
+
 .review-layout .actions {
   margin: 0 0 16px;
   display: flex;
