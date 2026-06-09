@@ -1,5 +1,5 @@
-/* KP Maker — v75 (incoming controls + mobile table fit) */
-/* design-mark: v75-top-split */
+/* KP Maker — v121 (incoming controls + mobile table fit) */
+/* design-mark: v121-top-split */
 
 :root {
   --brand: #fe5000;
@@ -60,7 +60,7 @@
   --card-radius-form: 24px;
   --field-radius: 9999px;
   --field-radius-row: 9999px;
-  --design-version: 75;
+  --design-version: 121;
   --figma-file: UZ0hbKoFmeqZSFDzo7D76b;
   --card-shadow: 0 1px 1.5px rgba(28, 25, 23, 0.06);
   --card-shadow-soft: 0 1px 1.5px rgba(28, 25, 23, 0.05);
@@ -998,53 +998,50 @@ tr:last-child td {
   flex-wrap: wrap;
 }
 
-/* —— Send button ring progress —— */
-.send-btn-wrap {
-  position: relative;
-  display: inline-flex;
+/* —— Send email circular progress —— */
+.mail-progress {
+  width: 32px;
+  height: 32px;
+  display: none;
+  flex-shrink: 0;
 }
 
-.send-btn-ring {
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  width: calc(100% + 4px);
-  height: calc(100% + 4px);
-  pointer-events: none;
-  overflow: visible;
+.mail-progress svg {
+  width: 32px;
+  height: 32px;
+  transform: rotate(-90deg);
 }
 
-.send-btn-ring rect {
-  fill: none;
-  stroke-width: 3;
+.mail-progress-track {
+  stroke: var(--md-outline-variant);
 }
 
-.send-btn-ring-track {
-  stroke: rgba(255, 255, 255, 0.15);
-  x: 1.5; y: 1.5;
-}
-
-.send-btn-ring-fill {
+.mail-progress-ring {
   stroke: #4caf50;
   stroke-linecap: round;
-  stroke-dasharray: 0;
-  stroke-dashoffset: 0;
-  transition: stroke-dashoffset 0.3s linear;
-  x: 1.5; y: 1.5;
+  stroke-dasharray: 97.39;
+  stroke-dashoffset: 97.39;
+  transition: stroke-dashoffset 0.25s linear, stroke 0.2s ease;
 }
 
-.send-btn-wrap #send-btn {
-  transition: background 0.3s ease, color 0.3s ease;
-  position: relative;
-  z-index: 1;
+.mail-progress.show {
+  display: inline-block;
 }
 
-.send-btn-wrap.success #send-btn {
+.mail-progress.success .mail-progress-ring {
+  stroke: #2e7d32;
+}
+
+.mail-progress.error .mail-progress-ring {
+  stroke: var(--md-error);
+}
+
+#send-btn.success {
   background: #2e7d32 !important;
   color: #ffffff !important;
 }
 
-.send-btn-wrap.error #send-btn {
+#send-btn.error {
   background: #c62828 !important;
   color: #ffffff !important;
 }

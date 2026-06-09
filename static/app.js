@@ -177,49 +177,42 @@ if (applyRoundingBtn && applyRoundingInput) {
   });
 }
 
-const sendBtnWrap = document.getElementById("send-btn-wrap");
 const sendBtnEl = document.getElementById("send-btn");
-const sendBtnRingFill = document.getElementById("send-btn-ring-fill");
-const sendBtnRingTrack = document.getElementById("send-btn-ring-track");
-
-function getRingPerimeter() {
-  if (!sendBtnWrap) return 500;
-  const rect = sendBtnWrap.getBoundingClientRect();
-  const w = rect.width + 4 - 3;
-  const h = rect.height + 4 - 3;
-  const r = Math.min(21, h / 2);
-  return 2 * (w - 2 * r) + 2 * Math.PI * r;
-}
-
-function initRing() {
-  if (!sendBtnRingFill || !sendBtnRingTrack || !sendBtnWrap) return;
-  const rect = sendBtnWrap.getBoundingClientRect();
-  const w = rect.width + 4;
-  const h = rect.height + 4;
-  [sendBtnRingFill, sendBtnRingTrack].forEach((el) => {
-    el.setAttribute("width", String(w - 3));
-    el.setAttribute("height", String(h - 3));
-  });
-  const p = getRingPerimeter();
-  sendBtnRingFill.style.strokeDasharray = String(p);
-  sendBtnRingFill.style.strokeDashoffset = String(p);
-}
 
 function setMailProgress(progress, state = "sending", errorMsg = "") {
-  if (!sendBtnRingFill || !sendBtnWrap) return;
-  const p = getRingPerimeter();
-  const safe = Math.max(0, Math.min(100, progress));
-  sendBtnRingFill.style.strokeDasharray = String(p);
-  sendBtnRingFill.style.strokeDashoffset = String(p - (p * safe) / 100);
+  if (!mailProgressNode) return;
+  const ring = mailProgressNode.querySelector(".mail-progress-ring");
+  if (!ring) return;
 
-  sendBtnWrap.classList.remove("success", "error");
+  const safe = Math.max(0, Math.min(100, progress));
+  ring.style.strokeDashoffset = String(MAIL_CIRCLE - (MAIL_CIRCLE * safe) / 100);
+
+  mailProgressNode.classList.remove("success", "error", "show");
+  if (sendBtnEl) sendBtnEl.classList.remove("success", "error");
+
+  if (state === "sending" || state === "success" || state === "error") {
+    mailProgressNode.classList.add("show");
+  }
 
   if (state === "success") {
-    sendBtnWrap.classList.add("success");
-    if (sendBtnEl) sendBtnEl.textContent = "Отправлено ✓";
+    mailProgressNode.classList.add("success");
+    if (sendBtnEl) {
+      sendBtnEl.classList.add("success");
+      sendBtnEl.textContent = "Отправлено ✓";
+    }
+    if (mailProgressTextNode) mailProgressTextNode.textContent = "";
   } else if (state === "error") {
-    sendBtnWrap.classList.add("error");
-    if (sendBtnEl) sendBtnEl.textContent = errorMsg || "Ошибка отправки";
+    mailProgressNode.classList.add("error");
+    if (sendBtnEl) {
+      sendBtnEl.classList.add("error");
+      sendBtnEl.textContent = errorMsg || "Ошибка отправки";
+    }
+    if (mailProgressTextNode) mailProgressTextNode.textContent = "";
+  } else if (state === "sending") {
+    if (sendBtnEl) sendBtnEl.textContent = "Отправить на email";
+    if (mailProgressTextNode) {
+      mailProgressTextNode.textContent = "Отправляем письмо...";
+    }
   }
 }
 
@@ -252,7 +245,6 @@ async function pollMailJob(jobId) {
 if (sendEmailForm) {
   sendEmailForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    initRing();
     const formData = new FormData(sendEmailForm);
     if (sendBtnEl) sendBtnEl.disabled = true;
     setMailProgress(5, "sending");
