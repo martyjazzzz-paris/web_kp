@@ -1103,11 +1103,11 @@ tr:last-child td {
 }
 
 .review-page .site-header__brand {
-  margin-left: 3px;
+  margin-left: 6px;
 }
 
 .review-layout .actions {
-  margin-left: -2px !important;
+  margin-left: 1px !important;
 }
 
 .review-layout {
