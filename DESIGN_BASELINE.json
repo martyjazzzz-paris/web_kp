@@ -1,19 +1,22 @@
 {
-  "version": 75,
-  "mark": "v75-top-split",
+  "version": 121,
+  "mark": "v121-top-split",
   "layout_html_class": "top-split",
-  "forbidden_in_index_html": ["dashboard-grid", "class=\"dashboard-grid\""],
+  "forbidden_in_index_html": [
+    "dashboard-grid",
+    "class=\"dashboard-grid\""
+  ],
   "required_markers": {
     "styles.css": [
-      "design-mark: v75-top-split",
-      "--design-version: 75",
+      "design-mark: v121-top-split",
+      "--design-version: 121",
       ".top-split",
       ".btn-remove-row",
       "body::before"
     ],
     "index.html": [
       "top-split",
-      "styles.css?v=120",
+      "styles.css?v=121",
       "icon-trash",
       "actions--preview"
     ]
@@ -23,7 +26,7 @@
     "main.py",
     "review_routes.py"
   ],
-  "cache_bust_value": "120",
+  "cache_bust_value": "121",
   "deploy_script": "./fix_prod_now.sh",
   "locked": "2026-06-01",
   "notes": "Matched review/detail buttons to standard shape and removed mobile incoming horizontal overflow."
