@@ -1098,8 +1098,8 @@ tr:last-child td {
 /* Inbox: align header with table left edge (full-width layout, 24px container padding) */
 .review-page .site-header__inner {
   max-width: none;
-  padding-left: 24px;
-  padding-right: 24px;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .review-layout {
