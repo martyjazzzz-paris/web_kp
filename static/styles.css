@@ -1102,6 +1102,14 @@ tr:last-child td {
   padding-right: 0;
 }
 
+.review-page .site-header__brand {
+  margin-left: 3px;
+}
+
+.review-layout .actions {
+  margin-left: -2px !important;
+}
+
 .review-layout {
   max-width: none !important;
   padding-bottom: 32px;
